@@ -536,12 +536,12 @@
 
     .proj-nav-btn {
       position: absolute;
-      top: 42%;
+      top: 50%;
       transform: translateY(-50%);
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: var(--ink);
+      background: rgba(10,10,10,0.55);
       border: none;
       cursor: pointer;
       display: flex;
@@ -550,11 +550,11 @@
       z-index: 10;
       transition: background 0.2s, transform 0.2s;
     }
-    .proj-nav-btn.next { right: -18px; }
-    .proj-nav-btn.prev { left: -18px; }
+    .proj-nav-btn.next { right: 12px; }
+    .proj-nav-btn.prev { left: 12px; }
     .proj-nav-btn:hover {
-      background: #444;
-      transform: translateY(-50%) scale(1.1);
+      background: rgba(10,10,10,0.85);
+      transform: translateY(-50%) scale(1.08);
     }
     .proj-nav-btn svg {
       width: 14px;
@@ -565,8 +565,7 @@
       stroke-linecap: round;
       stroke-linejoin: round;
     }
-    .proj-item:first-child .proj-nav-btn.prev { display: none; }
-    .proj-item:last-child  .proj-nav-btn.next { display: none; }
+    .proj-nav-btn.hidden { display: none; }
 
     /* cursor pointer nas capas */
     .proj-img-wrap.has-gallery { cursor: pointer; }
@@ -668,12 +667,16 @@
       <div class="proj-item" id="proj-0">
         <div class="proj-img-wrap landscape has-gallery"
              data-gallery='["1.jpg","2.jpg","3.jpg","4.jpg"]'
-             onclick="openLightbox(this)">
-          <img src="1.jpg" alt="Como a Laranja pode ser uma aliada da sua pele" />
+             onclick="openLightbox(this)"
+             id="cover-0">
+          <img id="cover-img-0" src="1.jpg" alt="Como a Laranja pode ser uma aliada da sua pele" />
+          <button class="proj-nav-btn prev" id="cover-prev-0" onclick="event.stopPropagation(); coverStep(0,-1)" aria-label="Slide anterior">
+            <svg viewBox="0 0 16 16"><path d="M13 8H3M7 4L3 8l4 4"/></svg>
+          </button>
+          <button class="proj-nav-btn next" id="cover-next-0" onclick="event.stopPropagation(); coverStep(0,1)" aria-label="Próximo slide">
+            <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </button>
         </div>
-        <button class="proj-nav-btn next" onclick="scrollToProj(1)" aria-label="Próximo projeto">
-          <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
-        </button>
         <div class="proj-info">
           <span class="proj-number">01</span>
           <p class="proj-title">Laranja &amp;<br /><em>Vitamina C</em></p>
@@ -682,8 +685,8 @@
         </div>
       </div>
 
-      <!-- PROJETO 02 — imagem à direita -->
-      <div class="proj-item">
+      <!-- PROJETO 02 -->
+      <div class="proj-item" id="proj-1">
         <div class="proj-img-wrap portrait"></div>
         <div class="proj-info">
           <span class="proj-number">02</span>
@@ -752,10 +755,27 @@
   </footer>
 
   <script>
-    function scrollToProj(index) {
-      const el = document.getElementById('proj-' + index);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const coverState = {};
+
+    function coverStep(projId, dir) {
+      const wrap   = document.getElementById('cover-' + projId);
+      const images = JSON.parse(wrap.dataset.gallery);
+      if (coverState[projId] === undefined) coverState[projId] = 0;
+      coverState[projId] = Math.max(0, Math.min(images.length - 1, coverState[projId] + dir));
+      const idx = coverState[projId];
+      document.getElementById('cover-img-' + projId).src = images[idx];
+      document.getElementById('cover-prev-' + projId).classList.toggle('hidden', idx === 0);
+      document.getElementById('cover-next-' + projId).classList.toggle('hidden', idx === images.length - 1);
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const wrap = document.getElementById('cover-0');
+      if (wrap) {
+        const images = JSON.parse(wrap.dataset.gallery);
+        document.getElementById('cover-prev-0').classList.add('hidden');
+        if (images.length <= 1) document.getElementById('cover-next-0').classList.add('hidden');
+      }
+    });
 
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
