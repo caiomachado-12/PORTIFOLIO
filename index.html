@@ -439,6 +439,64 @@
       * { animation: none !important; transition: none !important; }
     }
 
+
+    /* ── ANIMAÇÕES ── */
+
+    /* Hero: logo entra letra por letra */
+    .logo-word span {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: letterUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .logo-sub, .logo-year {
+      opacity: 0;
+      animation: fadeUp 0.5s ease forwards;
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Cards de projeto — hover lift */
+    .proj-item {
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .proj-item:hover {
+      transform: translateY(-4px);
+    }
+
+    /* Troca de slide na capa — fade */
+    .proj-img-wrap img {
+      transition: opacity 0.3s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+    .proj-img-wrap img.switching {
+      opacity: 0;
+    }
+
+    /* Botões de nav — aparecem no hover do card */
+    .proj-nav-btn {
+      opacity: 0;
+      transition: opacity 0.25s ease, background 0.2s, transform 0.2s;
+    }
+    .proj-item:hover .proj-nav-btn:not(.hidden) {
+      opacity: 1;
+    }
+
+    @keyframes letterUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     /* ── LIGHTBOX ── */
     .lb-overlay {
       display: none;
@@ -567,24 +625,7 @@
     }
     .proj-nav-btn.hidden { display: none; }
 
-    /* cursor pointer nas capas */
-    .proj-img-wrap.has-gallery { cursor: pointer; }
-    .proj-img-wrap.has-gallery::after {
-      content: 'Ver carrossel';
-      position: absolute;
-      bottom: 1rem;
-      right: 1rem;
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #fff;
-      background: rgba(0,0,0,0.45);
-      padding: 5px 12px;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .proj-img-wrap.has-gallery { position: relative; }
-    .proj-item:hover .proj-img-wrap.has-gallery::after { opacity: 1; }
+
 
   </style>
 </head>
@@ -604,18 +645,18 @@
   <section class="hero">
     <div class="logo-display">
       <div class="logo-word">
-        <span>P</span><span class="cut"><span>O</span></span><span>R</span><span>T</span>
+        <span>P</span><span class="cut" style="animation-delay:0.05s"><span>O</span></span><span>R</span><span>T</span>
       </div>
       <div class="logo-word">
-        <span>F</span><span class="cut"><span>O</span></span><span>L</span><span>I</span><span>O</span>
+        <span>F</span><span class="cut" style="animation-delay:0.05s"><span>O</span></span><span>L</span><span>I</span><span>O</span>
       </div>
-      <p class="logo-sub">Design e Direção de Arte</p>
-      <p class="logo-year">2025</p>
+      <p class="logo-sub" style="animation-delay:0.55s">Design e Direção de Arte</p>
+      <p class="logo-year" style="animation-delay:0.65s">2025</p>
     </div>
   </section>
 
   <!-- INTRO — arco + apresentação -->
-  <section class="intro" id="sobre">
+  <section class="intro reveal" id="sobre">
     <div class="arch-frame">
       <!-- Substitua pela tag abaixo quando tiver sua foto:
            <img src="foto.jpg" alt="Caio Machado" />
@@ -664,10 +705,9 @@
     <div class="proj-grid">
 
       <!-- PROJETO 01 -->
-      <div class="proj-item" id="proj-0">
-        <div class="proj-img-wrap landscape has-gallery"
+      <div class="proj-item reveal" id="proj-0">
+        <div class="proj-img-wrap landscape"
              data-gallery='["1.jpg","2.jpg","3.jpg","4.jpg"]'
-             onclick="openLightbox(this)"
              id="cover-0">
           <img id="cover-img-0" src="1.jpg" alt="Como a Laranja pode ser uma aliada da sua pele" />
           <button class="proj-nav-btn prev" id="cover-prev-0" onclick="event.stopPropagation(); coverStep(0,-1)" aria-label="Slide anterior">
@@ -686,7 +726,7 @@
       </div>
 
       <!-- PROJETO 02 -->
-      <div class="proj-item" id="proj-1">
+      <div class="proj-item reveal" id="proj-1" style="transition-delay:0.1s">
         <div class="proj-img-wrap portrait"></div>
         <div class="proj-info">
           <span class="proj-number">02</span>
@@ -697,7 +737,7 @@
       </div>
 
       <!-- PROJETO 03 -->
-      <div class="proj-item" id="proj-2">
+      <div class="proj-item reveal" id="proj-2" style="transition-delay:0.2s">
         <div class="proj-img-wrap landscape"></div>
         <div class="proj-info">
           <span class="proj-number">03</span>
@@ -711,7 +751,7 @@
   </section>
 
   <!-- SOBRE -->
-  <section class="about">
+  <section class="about reveal">
     <div>
       <h2 class="about-heading">Sobre<br /><em>mim.</em></h2>
       <p class="about-body">
@@ -732,7 +772,7 @@
   </section>
 
   <!-- CONTATO -->
-  <section class="contact" id="contato">
+  <section class="contact reveal" id="contato">
     <div class="contact-inner">
       <h2 class="contact-heading">
         Vamos<br />trabalhar<br />juntos.
@@ -755,6 +795,18 @@
   </footer>
 
   <script>
+    /* Scroll reveal */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
     const coverState = {};
 
     function coverStep(projId, dir) {
@@ -763,7 +815,12 @@
       if (coverState[projId] === undefined) coverState[projId] = 0;
       coverState[projId] = Math.max(0, Math.min(images.length - 1, coverState[projId] + dir));
       const idx = coverState[projId];
-      document.getElementById('cover-img-' + projId).src = images[idx];
+      const img = document.getElementById('cover-img-' + projId);
+      img.classList.add('switching');
+      setTimeout(() => {
+        img.src = images[idx];
+        img.classList.remove('switching');
+      }, 280);
       document.getElementById('cover-prev-' + projId).classList.toggle('hidden', idx === 0);
       document.getElementById('cover-next-' + projId).classList.toggle('hidden', idx === images.length - 1);
     }
